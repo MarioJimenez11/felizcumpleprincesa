@@ -4,9 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>¡Feliz Cumpleaños, Mi Amor!</title>
+    <!-- Meta descripción para SEO y vista previa en buscadores -->
+    <meta name="description" content="Una carta de cumpleaños especial y personalizada con sorpresas interactivas para Laura.">
+    <!-- Favicon personalizado: un corazón -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❤️</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <style>
+        html {
+            scroll-behavior: smooth; /* Desplazamiento suave para anclas */
+        }
         body {
             font-family: 'Inter', sans-serif;
             background-color: #fce7f3;
@@ -16,6 +23,23 @@
             min-height: 100vh;
             padding: 20px;
             box-sizing: border-box;
+            /* Estilo de scrollbar personalizado */
+            scrollbar-width: thin;
+            scrollbar-color: #fca5a5 #fce7f3;
+        }
+
+        /* Estilo de scrollbar para navegadores Webkit (Chrome, Safari) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fce7f3;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #fca5a5;
+            border-radius: 10px;
+            border: 2px solid #fce7f3;
         }
 
         .letter-container {
@@ -23,12 +47,17 @@
             border-radius: 20px;
             padding: 40px;
             padding-bottom: 100px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            /* Sombra más pronunciada para dar profundidad */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
             max-width: 800px;
             width: 100%;
             text-align: center;
             position: relative;
             overflow: hidden;
+            /* Patrón de fondo sutil */
+            background-image: radial-gradient(#fbcfe8 1px, transparent 1px);
+            background-size: 15px 15px;
+            background-position: -5px -5px;
         }
 
         .main-title {
@@ -62,6 +91,12 @@
             height: auto;
             border-radius: 10px;
             opacity: 0.8;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out; /* Animación de hover */
+        }
+
+        .sticker:hover {
+            transform: scale(1.1) rotate(0deg); /* Efecto al pasar el ratón */
+            opacity: 1;
         }
 
         .sticker-top-left { top: 15px; left: 15px; transform: rotate(-10deg); }
@@ -71,14 +106,15 @@
         .sticker-middle-left { top: 50%; left: -30px; transform: translateY(-50%) rotate(20deg); }
         .sticker-middle-right { top: 50%; right: -30px; transform: translateY(-50%) rotate(-20deg); }
 
-        .magic-message-button, .surprise-sticker-button {
+        /* Estilos para los botones */
+        .magic-message-button {
             background-color: #fca5a5;
             color: white;
             padding: 12px 25px;
             border-radius: 15px;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
             margin-top: 20px;
             display: inline-flex;
             align-items: center;
@@ -86,16 +122,18 @@
             box-shadow: 0 4px 10px rgba(252, 165, 165, 0.4);
         }
 
-        .magic-message-button:hover, .surprise-sticker-button:hover {
+        .magic-message-button:hover {
             background-color: #f87171;
             transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(252, 165, 165, 0.6);
         }
 
-        .magic-message-button:active, .surprise-sticker-button:active {
+        .magic-message-button:active {
             transform: translateY(0);
             box-shadow: 0 2px 5px rgba(252, 165, 165, 0.4);
         }
 
+        /* Estilo para el área del mensaje mágico */
         .magic-message-area {
             margin-top: 30px;
             padding: 20px;
@@ -126,26 +164,166 @@
             transition: opacity 0.5s ease-in-out, max-height 0.5s ease-in-out;
         }
 
-        .surprise-sticker-area {
-            margin-top: 40px;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-            text-align: center;
+        /* Estilos para la cuadrícula de raspa y gana (3 superiores) */
+        .scratch-cards-top-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(180px, 1fr)); /* 3 columnas, responsivo, más grandes */
+            gap: 20px; /* Espacio entre tarjetas */
+            margin: 40px auto 20px auto; /* Margen superior, auto horizontal, margen inferior */
+            max-width: 600px; /* Ancho máximo ajustado para 3 tarjetas de 180px + 2*20px de gap */
+            justify-content: center; /* Centrar la cuadrícula */
         }
 
-        .surprise-sticker-area.visible {
-            display: block;
-            opacity: 1;
+        /* Contenedor para el 4to cuadrito central */
+        .scratch-card-center-item {
+            display: flex;
+            justify-content: center; /* Centra horizontalmente */
+            margin-bottom: 40px; /* Espacio debajo de la tarjeta central */
         }
 
-        .surprise-sticker-area img {
-            max-width: 250px;
-            height: auto;
+        /* Estilo para cada item individual de raspa y gana */
+        .scratch-card-item {
+            position: relative;
+            width: 180px; /* Tamaño fijo para cada tarjeta, más grande */
+            height: 180px;
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-            display: block;
-            margin: 0 auto;
+            overflow: hidden;
+            /* Sombra más pronunciada para los cuadros */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            background-color: #fff0f5; /* Fondo para el contenido oculto */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ec4899;
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out; /* Animación de hover */
+        }
+
+        .scratch-card-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2); /* Sombra más grande al pasar el ratón */
+        }
+
+        /* Estilo específico para el cuadrito grande (ahora el 4) */
+        .scratch-card-item-large {
+            width: 400px; /* Tamaño mucho más grande para el cuadrito 4 */
+            height: 400px;
+        }
+
+        .scratch-card-item canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+            border-radius: 15px;
+            z-index: 2; /* Canvas encima del contenido */
+        }
+
+        .scratch-card-item canvas.scratching {
+            cursor: grabbing;
+        }
+
+        .scratch-number {
+            position: absolute; /* Posicionar el número en la capa de raspado */
+            z-index: 3; /* Encima del canvas */
+            font-size: 3rem;
+            font-weight: bold;
+            color: #fff; /* Texto blanco para el número en la capa gris */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hidden-content {
+            position: relative; /* Contenido debajo del canvas */
+            z-index: 1;
+            text-align: center;
+            padding: 15px; /* Padding general para los cuadritos pequeños, aumentado */
+            font-size: 1rem; /* Tamaño de fuente general para pequeños */
+            color: #555;
+            line-height: 1.4; /* Ajuste para mejor lectura */
+            display: flex; /* Para centrar contenido */
+            flex-direction: column; /* Permite apilar texto e imagen */
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Ajustes específicos para el contenido oculto del cuadrito grande */
+        .scratch-card-item-large .hidden-content {
+            font-size: 1.2rem; /* Tamaño de fuente para el texto grande */
+            padding: 25px; /* Más padding para el cuadro grande */
+            line-height: 1.5; /* Espaciado de línea para el texto grande */
+        }
+
+        /* Ajustes específicos para el contenido del cuadro 1 */
+        #hiddenContent1 {
+            padding-top: 25px; /* Empuja el texto más abajo desde la parte superior */
+            padding-bottom: 5px; /* Reduce el padding inferior para subir la imagen */
+        }
+        #hiddenContent1 p {
+            font-size: 0.85rem; /* Texto más pequeño para el cuadro 1 */
+            line-height: 1.2;
+            margin-bottom: 0px; /* Elimina el margen inferior para subir la imagen */
+        }
+        #hiddenContent1 img {
+            max-width: 65%; /* Imagen más pequeña para el cuadro 1 */
+            max-height: 65%;
+            margin-top: 0px; /* Elimina el margen superior para subir la imagen */
+        }
+
+        /* Ajustes específicos para el contenido del cuadro 2 */
+        #hiddenContent2 p {
+            font-size: 0.9rem; /* Tamaño de fuente para el cuadro 2 */
+            line-height: 1.3;
+            margin-bottom: 5px; /* Espacio entre texto e imagen */
+        }
+        #hiddenContent2 img {
+            max-width: 70%; /* Ajusta el tamaño de la imagen para el cuadro 2 */
+            max-height: 70%;
+        }
+
+        /* Ajustes específicos para el contenido del cuadro 3 */
+        #hiddenContent3 p {
+            font-size: 0.9rem; /* Tamaño de fuente para el cuadro 3 */
+            line-height: 1.3;
+            margin-bottom: 5px; /* Espacio entre texto e imagen */
+        }
+        #hiddenContent3 img {
+            max-width: 70%; /* Ajusta el tamaño de la imagen para el cuadro 3 */
+            max-height: 70%;
+        }
+
+        .scratch-card-item-large .hidden-content p {
+            margin-bottom: 30px; /* Aumentado el espacio debajo del párrafo en el cuadro grande */
+        }
+
+        .hidden-content img {
+            max-width: 75%; /* La imagen puede ocupar hasta el 75% del ancho */
+            max-height: 75%; /* La imagen puede ocupar hasta el 75% de la altura */
+            border-radius: 10px;
+            object-fit: contain; /* Asegura que la imagen se ajuste bien sin cortar */
+        }
+
+        /* Estilos para la nota de términos y condiciones */
+        .terms-note {
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #fff0f5;
+            border: 2px dashed #fbcfe8;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .terms-note strong {
+            color: #ec4899;
         }
 
         @media (max-width: 768px) {
@@ -162,7 +340,7 @@
             .sticker {
                 width: 60px;
             }
-            .magic-message-button, .surprise-sticker-button {
+            .magic-message-button {
                 padding: 10px 20px;
                 font-size: 0.9rem;
             }
@@ -170,8 +348,69 @@
                 padding: 15px;
                 font-size: 0.9rem;
             }
-            .surprise-sticker-area img {
-                max-width: 150px;
+            .scratch-card-item {
+                width: 120px; /* Ajuste de tamaño para móviles (más grande que antes) */
+                height: 120px;
+            }
+            .scratch-number {
+                font-size: 2.5rem;
+            }
+            .hidden-content {
+                font-size: 0.85rem; /* Más pequeño en móviles */
+                padding: 10px; /* Menos padding en móviles */
+            }
+            .scratch-cards-top-grid {
+                grid-template-columns: repeat(3, minmax(100px, 1fr)); /* Ajuste para 3 columnas en móviles */
+                max-width: 340px; /* Ajuste el ancho máximo para móviles */
+            }
+            .scratch-card-item-large {
+                width: 280px; /* Ajuste de tamaño para el cuadrito 4 en móviles */
+                height: 280px;
+            }
+            .scratch-card-item-large .hidden-content {
+                font-size: 1rem; /* Ajuste de fuente para el cuadro grande en móviles */
+                padding: 15px;
+            }
+            .scratch-card-item-large .hidden-content p {
+                margin-bottom: 15px; /* Ajuste de margen en móviles */
+            }
+            /* Ajustes específicos para el contenido del cuadro 1 en móvil */
+            #hiddenContent1 {
+                padding-top: 15px;
+                padding-bottom: 3px;
+            }
+            #hiddenContent1 p {
+                font-size: 0.7rem;
+                margin-bottom: 0px;
+            }
+            #hiddenContent1 img {
+                max-width: 55%;
+                max-height: 55%;
+                margin-top: 0px;
+            }
+            /* Ajustes específicos para el contenido del cuadro 2 en móvil */
+            #hiddenContent2 p {
+                font-size: 0.8rem;
+                margin-bottom: 3px;
+            }
+            #hiddenContent2 img {
+                max-width: 60%;
+                max-height: 60%;
+            }
+            /* Ajustes específicos para el contenido del cuadro 3 en móvil */
+            #hiddenContent3 p {
+                font-size: 0.8rem;
+                margin-bottom: 3px;
+            }
+            #hiddenContent3 img {
+                max-width: 60%;
+                max-height: 60%;
+            }
+
+            .terms-note {
+                margin-top: 30px;
+                padding: 15px;
+                font-size: 0.8rem;
             }
         }
     </style>
@@ -180,10 +419,10 @@
     <div class="letter-container">
         <h1 class="main-title">¡Feliz Cumpleaños, Mi Amor!</h1>
 
-        <img src="https://media.tenor.com/JMyM1f8Vge4AAAAj/dudu-bubu.gif" alt="Sticker Bubu y Dudu" class="sticker sticker-top-left">
-        <img src="https://media1.tenor.com/m/N6z7fKyQXCgAAAAC/bubu-dudu-bubu.gif" alt="Sticker Bubu y Dudu" class="sticker sticker-top-right">
-        <img src="https://media1.tenor.com/m/ZgEwD09MywgAAAAC/dudu-kissing-bubu-hearts.gif" alt="Sticker Dudu besando a Bubu" class="sticker sticker-bottom-left">
-        <img src="https://media1.tenor.com/m/UXLmgQdkDesAAAAd/robert-bri.gif" alt="Sticker Robert Bri" class="sticker sticker-bottom-right">
+        <img src="https://media.tenor.com/JMyM1f8Vge4AAAAj/dudu-bubu.gif" alt="Sticker de Dudu y Bubu abrazándose" class="sticker sticker-top-left">
+        <img src="https://media1.tenor.com/m/N6z7fKyQXCgAAAAC/bubu-dudu-bubu.gif" alt="Sticker de Bubu y Dudu con corazón" class="sticker sticker-top-right">
+        <img src="https://media1.tenor.com/m/ZgEwD09MywgAAAAC/dudu-kissing-bubu-hearts.gif" alt="Sticker de Dudu besando a Bubu" class="sticker sticker-bottom-left">
+        <img src="https://media1.tenor.com/m/UXLmgQdkDesAAAAd/robert-bri.gif" alt="Sticker de Robert Bri saludando" class="sticker sticker-bottom-right">
 
         <p class="letter-text">
 El día de hoy hace ya 20 añitos, nació una persona que formaría una parte importante de mi vida en el presente, que sin darme cuenta, se volvería parte de mi día a día, se volvería en si, la mejor parte de mi día.
@@ -195,45 +434,260 @@ Es difícil explicar lo que opino de ti y lo que siento por ti a través de pala
 
         <p class="signature">Con mucho amor,<br>Mario ❤️</p>
 
+        <!-- Sección del mensaje mágico original -->
         <div class="mt-8 pt-8 border-t border-pink-200">
             <button id="showMagicMessageBtn" class="magic-message-button">
                 ✨ ¡Haz Clic para un Mensaje Mágico! ✨
             </button>
             <div id="magicMessageOutput" class="magic-message-area">
+                <!-- Este mensaje aparecerá cuando se haga clic en el botón -->
             </div>
         </div>
 
-        <div class="mt-8 pt-8 border-t border-pink-200">
-            <button id="showSurpriseStickerBtn" class="surprise-sticker-button">
-                🎂 ¡Un Dulce Regalo para Ti! 🍰
-            </button>
-            <div id="surpriseStickerArea" class="surprise-sticker-area">
-                <img src="https://media1.tenor.com/m/JX2QMwMm-QkAAAAC/bubu-and-dudu.gif" alt="Bubu y Dudu comiendo pastel">
+        <!-- Introducción para el raspa y gana -->
+        <div class="mt-8 pt-8 border-t border-pink-200 text-left">
+            <p class="text-lg font-semibold text-pink-600 mb-4">Hola cachorrita❤️ hice este raspa y gana solo para ti, sigue las instrucciones para utilizarlo correctamente mi niña.</p>
+            <p class="text-md text-gray-700">INSTRUCCIONES❤️: Rasca cada cuadrito en el orden de su enumeración, lo que haya debajo será tu recompensa, ¡mucha suerte preciosa!❤️</p>
+        </div>
+
+        <!-- Contenedor para los 3 cuadritos superiores de raspa y gana -->
+        <div class="scratch-cards-top-grid">
+            <!-- Cuadrito 1 -->
+            <div class="scratch-card-item">
+                <div class="hidden-content" id="hiddenContent1">
+                    <p style="font-size: 0.85rem; line-height: 1.2; margin-bottom: 0px;">Uy! Regalo previamente obtenido 🙈</p>
+                    <img src="https://nft-tokens.habbo.com/clothes/images/clothing_nftcatslippers.png" alt="Zapatillas de gato de Habbo">
+                </div>
+                <canvas id="scratchCanvas1"></canvas>
             </div>
+            <!-- Cuadrito 2 -->
+            <div class="scratch-card-item">
+                <div class="hidden-content" id="hiddenContent2">
+                    <p style="font-size: 0.9rem; line-height: 1.3; margin-bottom: 5px;">qqqq, 5 creditos :0!</p>
+                    <img src="https://i.imgur.com/48cSM0I.png" alt="Monedas de Habbo">
+                </div>
+                <canvas id="scratchCanvas2"></canvas>
+            </div>
+            <!-- Cuadrito 3 -->
+            <div class="scratch-card-item">
+                <div class="hidden-content" id="hiddenContent3">
+                    <p style="font-size: 0.9rem; line-height: 1.3; margin-bottom: 5px;">WOW! un gorro de conejito!!!!</p>
+                    <img src="https://i.imgur.com/leXIP5Q.png" alt="Gorro de conejito">
+                </div>
+                <canvas id="scratchCanvas3"></canvas>
+            </div>
+        </div>
+
+        <!-- Cuadrito 4 (el grande, en el medio y abajo) -->
+        <div class="scratch-card-center-item">
+            <div class="scratch-card-item scratch-card-item-large">
+                <div class="hidden-content" id="hiddenContent4">
+                    <!-- Contenido sorpresa 4: Imagen del pastel y texto -->
+                    <p style="font-size: 1.2rem; line-height: 1.5; margin-bottom: 30px;">Feliz cumpleaños princesita de mi vida❤️</p>
+                    <img src="https://media1.tenor.com/m/JX2QMwMm-QkAAAAC/bubu-and-dudu.gif" alt="Bubu y Dudu comiendo pastel">
+                </div>
+                <canvas id="scratchCanvas4"></canvas>
+            </div>
+        </div>
+
+        <!-- Nota de términos y condiciones -->
+        <div class="terms-note">
+            <p><strong>Nota Importante:</strong> Para canjear tus premios de rasca y gana, dirígete a la sala de Habbo llamada:</p>
+            <p><strong>"FelizCumplePrincesa2025"</strong></p>
+            <p>creada por el usuario <strong>LauGift</strong>. Para entrar, deberás usar la contraseña:</p>
+            <p><strong>"cachorrita2025"</strong></p>
+            <p>¡Disfruta de tus sorpresas!</p>
         </div>
 
     </div>
 
     <script>
+        // Guardar el título original de la página
+        const originalTitle = document.title;
+
+        // JavaScript para el mensaje mágico (se mantiene)
         document.getElementById('showMagicMessageBtn').addEventListener('click', () => {
             const outputDiv = document.getElementById('magicMessageOutput');
-            const magicMessage = "Sabias que eres la niña mas linda del mundo mundial? Eres la luz mas bonita de mi vida, tu existir ilumina todo mi ser. Tienes bien preciosa tu carita, tus ojitos hermosos que como los amo de vdd, tus cejitas, tu boquita, tu naricita, tu cuerpecito, tus piernitas, tus manitas, tu cole que me pone modo tonto, no quiero ser obsceno en esta carta, pero ya sabes que mas opino que tienes bien rico y hermoso 😉 te amo te amo infinitamente mi niña consentida.❤️";
+            const magicMessage = "Sabias que eres la niña mas linda del mundo mundial? Eres la luz mas bonita de mi vida, tu existir ilumina todo mi ser. Tienes bien preciosa tu carita, tus ojitos hermosos que como los amo de vdd, tus cejitas, tu boquita, tu naricita, tu cuerpecito, tus piernitas, tu manitas, tu cole que me pone modo tonto, no quiero ser obsceno en esta carta, pero ya sabes que mas opino que tienes bien rico y hermoso 😉 te amo te amo infinitamente mi niña consentida.❤️";
             outputDiv.innerHTML = magicMessage;
             outputDiv.classList.add('visible');
         });
 
-        document.getElementById('showSurpriseStickerBtn').addEventListener('click', () => {
-            const stickerArea = document.getElementById('surpriseStickerArea');
-            stickerArea.classList.add('visible');
-        });
-
+        // Función para disparar el confeti al cargar la página (se mantiene)
         window.onload = () => {
             confetti({
                 particleCount: 100,
                 spread: 70,
                 origin: { y: 0.6 }
             });
+
+            // Inicializar todos los raspa y gana después de que la página cargue
+            initScratchCards();
         };
+
+        // --- Lógica del Raspa y Gana para múltiples cuadritos ---
+        function initScratchCards() {
+            // Datos de cada tarjeta de raspa y gana
+            const scratchCardsData = [
+                { id: 'scratchCanvas1', number: 1, contentId: 'hiddenContent1', radius: 20 },
+                { id: 'scratchCanvas2', number: 2, contentId: 'hiddenContent2', radius: 20 },
+                { id: 'scratchCanvas3', number: 3, contentId: 'hiddenContent3', radius: 20 },
+                { id: 'scratchCanvas4', number: 4, contentId: 'hiddenContent4', radius: 30 } // Ahora es el cuadrito 4 el grande
+            ];
+
+            scratchCardsData.forEach(cardData => {
+                const canvas = document.getElementById(cardData.id);
+                if (!canvas) return; // Si el canvas no existe, salta
+
+                const ctx = canvas.getContext('2d');
+                let isScratching = false;
+                const scratchRadius = cardData.radius; // Usa el radio definido en los datos
+
+                // Ajustar el tamaño del canvas para que coincida con su contenedor
+                function resizeCanvas() {
+                    const container = canvas.parentElement;
+                    canvas.width = container.offsetWidth;
+                    canvas.height = container.offsetHeight;
+                    drawScratchLayer(); // Redibujar la capa de raspado
+                }
+
+                // Dibuja la capa inicial con el número
+                function drawScratchLayer() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#cccccc'; // Color gris para la capa a raspar
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // Dibujar el número en la capa de raspado
+                    ctx.font = 'bold 40px Arial';
+                    ctx.fillStyle = '#ffffff'; // Color blanco para el número
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(cardData.number, canvas.width / 2, canvas.height / 2);
+
+                    ctx.globalCompositeOperation = 'destination-out'; // Modo para "borrar"
+                }
+
+                // Obtiene la posición del ratón/dedo relativa al canvas
+                function getMousePos(event) {
+                    const rect = canvas.getBoundingClientRect();
+                    let clientX, clientY;
+
+                    if (event.touches) { // Para eventos táctiles
+                        clientX = event.touches[0].clientX;
+                        clientY = event.touches[0].clientY;
+                    } else { // Para eventos de ratón
+                        clientX = event.clientX;
+                        clientY = event.clientY;
+                    }
+
+                    return {
+                        x: clientX - rect.left,
+                        y: clientY - rect.top
+                    };
+                }
+
+                // "Borra" un círculo en la capa de raspado
+                function scratch(x, y) {
+                    ctx.beginPath();
+                    ctx.arc(x, y, scratchRadius, 0, Math.PI * 2, true);
+                    ctx.fill();
+                }
+
+                // Eventos para el ratón
+                canvas.addEventListener('mousedown', (e) => {
+                    isScratching = true;
+                    canvas.classList.add('scratching');
+                    const pos = getMousePos(e);
+                    scratch(pos.x, pos.y);
+                });
+
+                canvas.addEventListener('mousemove', (e) => {
+                    if (!isScratching) return;
+                    const pos = getMousePos(e);
+                    scratch(pos.x, pos.y);
+                });
+
+                canvas.addEventListener('mouseup', () => {
+                    isScratching = false;
+                    canvas.classList.remove('scratching');
+                    checkScratchPercentage();
+                });
+
+                canvas.addEventListener('mouseleave', () => {
+                    isScratching = false;
+                    canvas.classList.remove('scratching');
+                });
+
+                // Eventos para dispositivos táctiles
+                canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault(); // Prevenir el scroll en móviles al tocar el canvas
+                    isScratching = true;
+                    canvas.classList.add('scratching');
+                    const pos = getMousePos(e);
+                    scratch(pos.x, pos.y);
+                }, { passive: false });
+
+                canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault(); // Prevenir el scroll en móviles al mover el dedo sobre el canvas
+                    if (!isScratching) return;
+                    const pos = getMousePos(e);
+                    scratch(pos.x, pos.y);
+                }, { passive: false });
+
+                canvas.addEventListener('touchend', () => {
+                    isScratching = false;
+                    canvas.classList.remove('scratching');
+                    checkScratchPercentage();
+                });
+
+                // Función para verificar cuánto se ha rascado y revelar el contenido
+                function checkScratchPercentage() {
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const pixels = imageData.data;
+                    let transparentPixels = 0;
+
+                    for (let i = 0; i < pixels.length; i += 4) {
+                        if (pixels[i + 3] === 0) { // Si el canal alfa (transparencia) es 0
+                            transparentPixels++;
+                        }
+                    }
+
+                    const totalPixels = pixels.length / 4;
+                    const percentage = (transparentPixels / totalPixels) * 100;
+
+                    if (percentage > 50) { // Si más del 50% ha sido rascado, revela el mensaje
+                        canvas.style.display = 'none'; // Oculta el canvas
+                        // Dispara confeti desde la posición de esta tarjeta
+                        confetti({
+                            particleCount: 50,
+                            spread: 40,
+                            origin: { y: 0.5, x: (canvas.getBoundingClientRect().left + canvas.getBoundingClientRect().width / 2) / window.innerWidth }
+                        });
+                    }
+                }
+
+                // Observador para redimensionar el canvas si su contenedor cambia de tamaño
+                const resizeObserver = new ResizeObserver(entries => {
+                    for (let entry of entries) {
+                        if (entry.target === canvas.parentElement) {
+                            resizeCanvas();
+                        }
+                    }
+                });
+                resizeObserver.observe(canvas.parentElement); // Observa el padre para redimensionar
+
+                resizeCanvas(); // Llamada inicial para establecer el tamaño
+            });
+        }
+
+        // Lógica para el título dinámico de la pestaña
+        window.addEventListener('focus', () => {
+            document.title = originalTitle; // Regresa al título original cuando la pestaña está activa
+        });
+
+        window.addEventListener('blur', () => {
+            document.title = "¡Vuelve, Laura! ❤️"; // Cambia el título cuando la pestaña no está activa
+        });
     </script>
 </body>
 </html>
