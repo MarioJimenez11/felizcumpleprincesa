@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Feliz Cumpleaños, Mi Amor!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fce7f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .letter-container {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 40px;
+            padding-bottom: 100px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ec4899;
+            margin-bottom: 20px;
+            font-family: 'Georgia', serif;
+        }
+
+        .letter-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #333;
+            text-align: left;
+            margin-bottom: 30px;
+            white-space: pre-wrap;
+        }
+
+        .signature {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #ec4899;
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        .sticker {
+            position: absolute;
+            width: 80px;
+            height: auto;
+            border-radius: 10px;
+            opacity: 0.8;
+        }
+
+        .sticker-top-left { top: 15px; left: 15px; transform: rotate(-10deg); }
+        .sticker-top-right { top: 15px; right: 15px; transform: rotate(15deg); }
+        .sticker-bottom-left { bottom: 15px; left: 15px; transform: rotate(5deg); }
+        .sticker-bottom-right { bottom: 15px; right: 15px; transform: rotate(-8deg); }
+        .sticker-middle-left { top: 50%; left: -30px; transform: translateY(-50%) rotate(20deg); }
+        .sticker-middle-right { top: 50%; right: -30px; transform: translateY(-50%) rotate(-20deg); }
+
+        .magic-message-button, .surprise-sticker-button {
+            background-color: #fca5a5;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(252, 165, 165, 0.4);
+        }
+
+        .magic-message-button:hover, .surprise-sticker-button:hover {
+            background-color: #f87171;
+            transform: translateY(-2px);
+        }
+
+        .magic-message-button:active, .surprise-sticker-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(252, 165, 165, 0.4);
+        }
+
+        .magic-message-area {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #fff0f5;
+            border-left: 5px solid #ec4899;
+            border-radius: 10px;
+            text-align: left;
+            font-style: italic;
+            color: #555;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .magic-message-area.visible {
+            opacity: 1;
+            max-height: 500px;
+            transition: opacity 0.5s ease-in-out, max-height 0.5s ease-in-out;
+        }
+
+        .magic-message-area:not(.visible) {
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.5s ease-in-out, max-height 0.5s ease-in-out;
+        }
+
+        .surprise-sticker-area {
+            margin-top: 40px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            text-align: center;
+        }
+
+        .surprise-sticker-area.visible {
+            display: block;
+            opacity: 1;
+        }
+
+        .surprise-sticker-area img {
+            max-width: 250px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            display: block;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .letter-container {
+                padding: 25px;
+                padding-bottom: 80px;
+            }
+            .main-title {
+                font-size: 2rem;
+            }
+            .letter-text {
+                font-size: 1rem;
+            }
+            .sticker {
+                width: 60px;
+            }
+            .magic-message-button, .surprise-sticker-button {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            .magic-message-area {
+                padding: 15px;
+                font-size: 0.9rem;
+            }
+            .surprise-sticker-area img {
+                max-width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="letter-container">
+        <h1 class="main-title">¡Feliz Cumpleaños, Mi Amor!</h1>
+
+        <img src="https://media.tenor.com/JMyM1f8Vge4AAAAj/dudu-bubu.gif" alt="Sticker Bubu y Dudu" class="sticker sticker-top-left">
+        <img src="https://media1.tenor.com/m/N6z7fKyQXCgAAAAC/bubu-dudu-bubu.gif" alt="Sticker Bubu y Dudu" class="sticker sticker-top-right">
+        <img src="https://media1.tenor.com/m/ZgEwD09MywgAAAAC/dudu-kissing-bubu-hearts.gif" alt="Sticker Dudu besando a Bubu" class="sticker sticker-bottom-left">
+        <img src="https://media1.tenor.com/m/UXLmgQdkDesAAAAd/robert-bri.gif" alt="Sticker Robert Bri" class="sticker sticker-bottom-right">
+
+        <p class="letter-text">
+El día de hoy hace ya 20 añitos, nació una persona que formaría una parte importante de mi vida en el presente, que sin darme cuenta, se volvería parte de mi día a día, se volvería en si, la mejor parte de mi día.
+Estoy agradecido con Dios, con el universo, con la vida, por haberte puesto en mi camino, y aun mucho más agradecido, porque esa persona que ha influido tanto en mi presente, tiene salud y el día de hoy esta cumpliendo un añito más.
+Eres la princesita más preciosa del mundo mundial, la princesita de mi vida, me encantas con tus defectos y virtudes, me encanta cada parte de ti, me has hecho mucho bien, gracias por estar aquí, y por a pesar de la distancia, existir conmigo, quien diría que una persona puede hacerte sentir tan en compañía y tantas emociones estando tan lejos no? 
+Gracias por ser como eres Laura, separando la situación que puedes andar viviendo, o la que pueda andar viviendo yo, estoy muy orgulloso de ti, sé que también puedes estar dando pasitos chiquititos de tortuga al igual que yo, sin embargo, aquí estás cada dia, compartiendo tu tiempo conmigo, y sin darte cuenta, influyendo a gran escala en mi presente, si un día te sientes inútil, recuerda que hiciste sentir emociones a alguien que hace tiempo no sentía nada❤️ Y eso es gracias a la gran persona que eres y a lo mucho que me has hecho apreciarte.
+Es difícil explicar lo que opino de ti y lo que siento por ti a través de palabras, sin embargo esto es un poco de lo mucho que siento y opino de ti, simplemente gracias por existir, te amo mucho y estoy muy feliz al saber que el día de hoy, una de las personitas que más quiero en esta vida cumple un año más, además de que hace poco se cumplió un añito más desde que se toparon nuestras existencias. Simplemente gracias, feliz cumpleaños, te amo.
+        </p>
+
+        <p class="signature">Con mucho amor,<br>Mario ❤️</p>
+
+        <div class="mt-8 pt-8 border-t border-pink-200">
+            <button id="showMagicMessageBtn" class="magic-message-button">
+                ✨ ¡Haz Clic para un Mensaje Mágico! ✨
+            </button>
+            <div id="magicMessageOutput" class="magic-message-area">
+            </div>
+        </div>
+
+        <div class="mt-8 pt-8 border-t border-pink-200">
+            <button id="showSurpriseStickerBtn" class="surprise-sticker-button">
+                🎂 ¡Un Dulce Regalo para Ti! 🍰
+            </button>
+            <div id="surpriseStickerArea" class="surprise-sticker-area">
+                <img src="https://media1.tenor.com/m/JX2QMwMm-QkAAAAC/bubu-and-dudu.gif" alt="Bubu y Dudu comiendo pastel">
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.getElementById('showMagicMessageBtn').addEventListener('click', () => {
+            const outputDiv = document.getElementById('magicMessageOutput');
+            const magicMessage = "Sabias que eres la niña mas linda del mundo mundial? Eres la luz mas bonita de mi vida, tu existir ilumina todo mi ser. Tienes bien preciosa tu carita, tus ojitos hermosos que como los amo de vdd, tus cejitas, tu boquita, tu naricita, tu cuerpecito, tus piernitas, tus manitas, tu cole que me pone modo tonto, no quiero ser obsceno en esta carta, pero ya sabes que mas opino que tienes bien rico y hermoso 😉 te amo te amo infinitamente mi niña consentida.❤️";
+            outputDiv.innerHTML = magicMessage;
+            outputDiv.classList.add('visible');
+        });
+
+        document.getElementById('showSurpriseStickerBtn').addEventListener('click', () => {
+            const stickerArea = document.getElementById('surpriseStickerArea');
+            stickerArea.classList.add('visible');
+        });
+
+        window.onload = () => {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        };
+    </script>
+</body>
+</html>
